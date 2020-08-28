@@ -31,7 +31,7 @@ class Lesson extends Model
     /**
      * レッスンの予約残り枠数を取得する
      */
-    private function remainingCount(): int
+    public function remainingCount(): int
     {
         // レッスンのキャパシティ - 予約確定数 = 予約残り枠数
         $reservationCount = $this->reservations()->count();

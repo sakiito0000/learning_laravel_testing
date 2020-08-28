@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Lesson;
 use App\Models\User;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,9 +24,16 @@ class UserTest extends TestCase
      */
     public function testCanReserve(string $plan, int $remainingCount, int $reservationCount, bool $canReserve)
     {
-        $user       = new User();
+        /** @var User $user */
+        $user = Mockery::mock(User::class)->makePartial();
+        $user->shouldReceive('reservationCountThisMonth')->andReturn($reservationCount);
         $user->plan = $plan;
-        $this->assertSame($user->canReserve($remainingCount, $reservationCount), $canReserve);
+
+        /** @var Lesson $lesson */
+        $lesson = Mockery::mock(Lesson::class);
+        $lesson->shouldReceive('remainingCount')->andReturn($remainingCount);
+
+        $this->assertSame($user->canReserve($lesson), $canReserve);
     }
 
     public function dataCanReserve()

@@ -5,9 +5,10 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
+use Tests\Factories\Traits\CreateUser;
 use Tests\TestCase;
 
 /**
@@ -16,6 +17,7 @@ use Tests\TestCase;
 class LessonControllerTest extends TestCase
 {
     use RefreshDatabase;
+    use CreateUser;
 
     /**
      * Undocumented function
@@ -38,11 +40,12 @@ class LessonControllerTest extends TestCase
         // 既存予約数分予約モデルを登録する
         for ($i = 0; $i < $reservationCount; $i++) {
             $user = factory(User::class)->create();
-            $lesson->reservations()->save(factory(Reservation::class)->make(['user_id' => $user]));
+            factory(UserProfile::class)->create(['user_id' => $user->id]);
+            $lesson->reservations()->save(factory(Reservation::class)->make(['user_id' => $user, 'lesson_id' => $lesson]));
         }
 
         //ログインユーザー設定
-        $user = factory(User::class)->create();
+        $user = $this->createUser();
         $this->actingAs($user);
 
         $response = $this->get("/lessons/{$lesson->id}");

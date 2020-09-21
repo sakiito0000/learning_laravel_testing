@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Lesson;
 use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Models\Reservation;
+use App\Notifications\ReservationCompleted;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,7 @@ class ReserveController extends Controller
             'lesson_id' => $lesson->id,
             'user_id'   => $user->id
         ]);
+        $user->notify(new ReservationCompleted($lesson));
 
         return redirect()->route('lessons.show', ['lesson' => $lesson]);
     }
